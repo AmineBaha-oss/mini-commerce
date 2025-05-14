@@ -11,36 +11,37 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::with('category')->paginate(10);
+        $products = Product::with('category')->latest()->paginate(10);
+
         return view('products.index', compact('products'));
     }
 
     public function create()
     {
         $categories = Category::all();
+
         return view('products.create', compact('categories'));
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'description' => 'required|string',
-            'price' => 'required|numeric|min:0',
+        $data = $request->validate([
+            'name'           => 'required|string|max:255',
+            'category_id'    => 'required|exists:categories,id',
+            'description'    => 'required|string',
+            'price'          => 'required|numeric|min:0',
             'stock_quantity' => 'required|integer|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image'          => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('products', 'public');
-            $validated['image'] = $imagePath;
+        if ($file = $request->file('image')) {
+            $data['image'] = $file->store('products', 'public');
         }
 
-        Product::create($validated);
+        Product::create($data);
 
         return redirect()->route('products.index')
-            ->with('success', 'Product created successfully.');
+                         ->with('success', 'Product created successfully.');
     }
 
     public function show(Product $product)
@@ -51,59 +52,54 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $categories = Category::all();
+
         return view('products.edit', compact('product', 'categories'));
     }
 
     public function update(Request $request, Product $product)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'description' => 'required|string',
-            'price' => 'required|numeric|min:0',
+        $data = $request->validate([
+            'name'           => 'required|string|max:255',
+            'category_id'    => 'required|exists:categories,id',
+            'description'    => 'required|string',
+            'price'          => 'required|numeric|min:0',
             'stock_quantity' => 'required|integer|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image'          => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        if ($request->hasFile('image')) {
-            if ($product->image) {
-                Storage::disk('public')->delete($product->image);
-            }
-
-            $imagePath = $request->file('image')->store('products', 'public');
-            $validated['image'] = $imagePath;
+        if ($file = $request->file('image')) {
+            $product->image && Storage::disk('public')->delete($product->image);
+            $data['image'] = $file->store('products', 'public');
         }
 
-        $product->update($validated);
+        $product->update($data);
 
         return redirect()->route('products.index')
-            ->with('success', 'Product updated successfully.');
+                         ->with('success', 'Product updated successfully.');
     }
 
     public function destroy(Product $product)
     {
-        if ($product->image) {
-            Storage::disk('public')->delete($product->image);
-        }
+        $product->image && Storage::disk('public')->delete($product->image);
 
         $product->delete();
 
         return redirect()->route('products.index')
-            ->with('success', 'Product deleted successfully.');
+                         ->with('success', 'Product deleted successfully.');
     }
 
     public function search(Request $request)
     {
-        $query = $request->get('q');
+        $query = $request->input('q', '');
 
         $products = Product::with('category')
-            ->where(function ($q) use ($query) {
+            ->when($query, fn($q) =>
                 $q->where('name', 'like', "%{$query}%")
-                    ->orWhere('description', 'like', "%{$query}%");
-            })
-            ->orWhereHas('category', function ($q) use ($query) {
-                $q->where('name', 'like', "%{$query}%");
-            })
+                  ->orWhere('description', 'like', "%{$query}%")
+                  ->orWhereHas('category', fn($c) =>
+                      $c->where('name', 'like', "%{$query}%")
+                  )
+            )
             ->get();
 
         $html = view('products.partials.product-list', compact('products'))->render();
@@ -111,10 +107,11 @@ class ProductController extends Controller
         return response($html);
     }
 
-       
+
     public function adminIndex()
     {
-        $products = Product::with('category')->paginate(10);
+        $products = Product::with('category')->latest()->paginate(10);
+
         return view('admin.products.index', compact('products'));
     }
 
