@@ -54,7 +54,6 @@ class OrderController extends Controller
                 'quantity' => $item['quantity'],
             ]);
 
-            // Update stock quantity
             $product = Product::find($item['id']);
             $product->stock_quantity -= $item['quantity'];
             $product->save();

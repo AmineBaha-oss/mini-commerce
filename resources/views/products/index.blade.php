@@ -85,7 +85,7 @@
                         .catch(error => {
                             console.error('Error fetching search results:', error);
                         });
-                }, 500); // Debounce delay
+                }, 500); 
             });
         });
     </script>

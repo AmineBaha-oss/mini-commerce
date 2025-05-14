@@ -34,7 +34,6 @@ Route::post('/cart/update', [CartController::class, 'update'])->name('cart.updat
 Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
 Route::get('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
 
-// Order routes
 Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
 Route::get('/orders/confirmation/{order}', [OrderController::class, 'confirmation'])->name('orders.confirmation');
 

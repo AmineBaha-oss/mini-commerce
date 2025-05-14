@@ -66,7 +66,6 @@ class ProductController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            // Delete the old image if it exists
             if ($product->image) {
                 Storage::disk('public')->delete($product->image);
             }
@@ -83,7 +82,6 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
-        // Delete the image if it exists
         if ($product->image) {
             Storage::disk('public')->delete($product->image);
         }
@@ -94,7 +92,6 @@ class ProductController extends Controller
             ->with('success', 'Product deleted successfully.');
     }
 
-    // AJAX Search Method
     public function search(Request $request)
     {
         $query = $request->get('q');
@@ -114,12 +111,7 @@ class ProductController extends Controller
         return response($html);
     }
 
-        // …
-
-    /**
-     * Show the admin product management page.
-     * (Only for authenticated users; hooked to /admin/products)
-     */
+       
     public function adminIndex()
     {
         $products = Product::with('category')->paginate(10);
