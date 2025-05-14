@@ -1,5 +1,5 @@
 @extends('layouts.app')
-
+<!-- // @extends('layouts.app') -->
 @section('content')
     <div class="container">
         <div class="row mb-4">
@@ -85,7 +85,7 @@
                         .catch(error => {
                             console.error('Error fetching search results:', error);
                         });
-                }, 500); 
+                }, 500);
             });
         });
     </script>
