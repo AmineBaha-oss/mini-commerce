@@ -60,7 +60,6 @@ class OrderController extends Controller
             $product->save();
         }
 
-        // Clear the cart
         session()->forget('cart');
 
         return redirect()->route('orders.confirmation', $order)
