@@ -12,23 +12,28 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $orders = Order::with('items')->latest()->paginate(10);
+        $orders = Order::with('items')
+            ->latest()
+            ->paginate(10);
+
         return view('orders.index', compact('orders'));
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'customer_name' => 'required|string|max:255',
-            'customer_email' => 'required|email|max:255',
+        $data = $request->validate([
+            'customer_name'    => 'required|string|max:255',
+            'customer_email'   => 'required|email|max:255',
             'customer_address' => 'required|string',
-            'payment_type' => 'required|in:credit_card,paypal,bank_transfer',
+            'payment_type'     => 'required|in:credit_card,paypal,bank_transfer',
         ]);
 
-        $cart = session()->get('cart', []);
+        $cart = session('cart', []);
 
         if (empty($cart)) {
-            return redirect()->route('cart.index')->with('error', 'Your cart is empty!');
+            return redirect()
+                ->route('cart.index')
+                ->with('error', 'Your cart is empty!');
         }
 
         $totalAmount = 0;
@@ -37,21 +42,21 @@ class OrderController extends Controller
         }
 
         $order = Order::create([
-            'user_id' => auth()->id(),
-            'customer_name' => $validated['customer_name'],
-            'customer_email' => $validated['customer_email'],
+            'user_id'          => auth()->id(),
+            'customer_name'    => $validated['customer_name'],
+            'customer_email'   => $validated['customer_email'],
             'customer_address' => $validated['customer_address'],
-            'payment_type' => $validated['payment_type'],
-            'total_amount' => $totalAmount,
+            'payment_type'     => $validated['payment_type'],
+            'total_amount'     => $totalAmount,
         ]);
 
         foreach ($cart as $item) {
             OrderItem::create([
-                'order_id' => $order->id,
-                'product_id' => $item['id'],
+                'order_id'     => $order->id,
+                'product_id'   => $item['id'],
                 'product_name' => $item['name'],
-                'price' => $item['price'],
-                'quantity' => $item['quantity'],
+                'price'        => $item['price'],
+                'quantity'     => $item['quantity'],
             ]);
 
             $product = Product::find($item['id']);
@@ -61,7 +66,8 @@ class OrderController extends Controller
 
         session()->forget('cart');
 
-        return redirect()->route('orders.confirmation', $order)
+        return redirect()
+            ->route('orders.confirmation', $order)
             ->with('success', 'Order placed successfully!');
     }
 
