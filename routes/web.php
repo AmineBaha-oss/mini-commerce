@@ -28,6 +28,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/admin/orders', [OrderController::class, 'index'])->name('admin.orders.index');
     Route::get('/admin/orders/{order}', [OrderController::class, 'show'])->name('admin.orders.show');
+    Route::delete('/admin/orders/{order}',[OrderController::class, 'destroy'])->name('admin.orders.destroy');
 });
 
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');

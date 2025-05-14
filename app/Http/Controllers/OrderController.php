@@ -74,4 +74,12 @@ class OrderController extends Controller
     {
         return view('orders.confirmation', compact('order'));
     }
+
+    public function destroy(Order $order)
+    {
+        $order->delete();
+        return redirect()
+            ->route('admin.orders.index')
+            ->with('success', 'Order deleted successfully.');
+    }
 }
