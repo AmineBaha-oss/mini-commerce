@@ -10,6 +10,7 @@ Route::get('/', function () {
 });
 
 Route::get('/products/search', [ProductController::class, 'search'])->name('products.search');
+Route::get('/admin/products/search', [ProductController::class, 'adminSearch'])->name('admin.products.search');
 
 
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
@@ -18,6 +19,7 @@ Route::get('/products/{product}', [ProductController::class, 'show'])->name('pro
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin/products', [ProductController::class, 'adminIndex'])->name('admin.products.index');
+    Route::get('/admin/products/search', [ProductController::class, 'adminSearch'])->name('admin.products.search');
     Route::get('/admin/products/create', [ProductController::class, 'create'])->name('admin.products.create');
     Route::post('/admin/products', [ProductController::class, 'store'])->name('admin.products.store');
     Route::get('/admin/products/{product}/edit', [ProductController::class, 'edit'])->name('admin.products.edit');

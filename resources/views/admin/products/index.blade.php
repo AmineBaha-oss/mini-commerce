@@ -22,7 +22,7 @@
                         class="form-control"
                         placeholder="Search products..."
                         aria-label="Search">
-                    <button class="btn btn-outline-primary" type="button" id="button-addon2">
+                    <button class="btn btn-outline-primary" type="button">
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
@@ -30,96 +30,33 @@
         </div>
 
         <div class="row row-cols-1 row-cols-md-3 g-4" id="products-container">
-            @foreach($products as $product)
-                <div class="col">
-                    <div class="card h-100 product-card">
-                        @if($product->image)
-                            <img
-                                src="{{ asset('storage/' . $product->image) }}"
-                                class="card-img-top product-image"
-                                alt="{{ $product->name }}">
-                        @else
-                            <div
-                                class="bg-light d-flex align-items-center justify-content-center"
-                                style="height: 200px;">
-                                <p class="text-muted">No image</p>
-                            </div>
-                        @endif
-
-                        <div class="card-body">
-                            <h5 class="card-title">{{ $product->name }}</h5>
-                            <p class="card-text text-muted">
-                                {{ $product->category->name ?? 'No Category' }}
-                            </p>
-                            <p class="card-text">
-                                {{ Str::limit($product->description, 100) }}
-                            </p>
-                            <p class="card-text fw-bold">
-                                ${{ number_format($product->price, 2) }}
-                            </p>
-                            <p class="card-text text-muted">
-                                Stock: {{ $product->stock_quantity }}
-                            </p>
-                        </div>
-
-                        <div class="card-footer d-flex justify-content-between">
-                            <a
-                                href="{{ route('admin.products.edit', $product) }}"
-                                class="btn btn-sm btn-outline-primary">
-                                Edit
-                            </a>
-
-                            <form
-                                action="{{ route('admin.products.destroy', $product) }}"
-                                method="POST"
-                                onsubmit="return confirm('Are you sure you want to delete this product?');">
-                                @csrf
-                                @method('DELETE')
-                                <button
-                                    type="submit"
-                                    class="btn btn-sm btn-outline-danger">
-                                    Delete
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            @endforeach
+            @include('products.partials.product-list', ['products' => $products])
         </div>
 
         <div class="d-flex justify-content-center mt-4">
             {{ $products->links() }}
         </div>
     </div>
-@endsection
 
-@push('scripts')
-<script>
+    <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const searchInput = document.getElementById('search');
+        const searchInput       = document.getElementById('search');
         const productsContainer = document.getElementById('products-container');
-
-        let searchTimeout;
+        let timeoutId;
 
         searchInput.addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-
-            searchTimeout = setTimeout(function() {
-                const searchTerm = searchInput.value.trim();
-
-                axios.get(`/products/search?q=${searchTerm}`)
-                    .then(response => {
-                        productsContainer.innerHTML = response.data;
-                        productsContainer.classList.add('fade-in');
-                        setTimeout(() => {
-                            productsContainer.classList.remove('fade-in');
-                        }, 500);
-                    })
-                    .catch(error => {
-                        console.error('Error fetching search results:', error);
-                    });
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(function() {
+                const term = encodeURIComponent(searchInput.value.trim());
+                axios.get(`{{ route('admin.products.search') }}?q=${term}`)
+                     .then(res => {
+                         productsContainer.innerHTML = res.data;
+                         productsContainer.classList.add('fade-in');
+                         setTimeout(() => productsContainer.classList.remove('fade-in'), 500);
+                     })
+                     .catch(err => console.error(err));
             }, 500);
         });
     });
-</script>
-@endpush
+    </script>
+@endsection

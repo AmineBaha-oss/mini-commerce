@@ -107,12 +107,27 @@ class ProductController extends Controller
         return response($html);
     }
 
+    public function adminSearch(Request $request)
+{
+    $query = $request->input('q', '');
+    $products = Product::with('category')
+        ->when($query, fn($q) =>
+            $q->where('name', 'like', "%{$query}%")
+              ->orWhere('description', 'like', "%{$query}%")
+              ->orWhereHas('category', fn($c) =>
+                  $c->where('name', 'like', "%{$query}%")
+              )
+        )
+        ->get();
 
-    public function adminIndex()
-    {
-        $products = Product::with('category')->latest()->paginate(10);
+    return view('products.partials.product-list', compact('products'));
+}
 
-        return view('admin.products.index', compact('products'));
-    }
+        public function adminIndex()
+        {
+            $products = Product::with('category')->latest()->paginate(10);
+
+            return view('admin.products.index', compact('products'));
+        }
 
 }
