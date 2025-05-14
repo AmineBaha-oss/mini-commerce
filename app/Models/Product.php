@@ -14,13 +14,14 @@ class Product extends Model
         'description',
         'price',
         'image',
-        'stock_quantity'
+        'stock_quantity',
     ];
 
     public function category()
     {
         return $this->belongsTo(Category::class);
     }
+
 
     public function orderItems()
     {
