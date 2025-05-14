@@ -14,14 +14,13 @@ class Order extends Model
         'customer_email',
         'customer_address',
         'payment_type',
-        'total_amount',
+        'total_amount'
     ];
 
     public function items()
     {
         return $this->hasMany(OrderItem::class);
     }
-
 
     public function user()
     {
