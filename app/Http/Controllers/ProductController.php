@@ -113,4 +113,17 @@ class ProductController extends Controller
 
         return response($html);
     }
+
+        // …
+
+    /**
+     * Show the admin product management page.
+     * (Only for authenticated users; hooked to /admin/products)
+     */
+    public function adminIndex()
+    {
+        $products = Product::with('category')->paginate(10);
+        return view('admin.products.index', compact('products'));
+    }
+
 }
