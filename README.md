@@ -1,3 +1,33 @@
+mini-commerce
+
+mini-commerce is a lightweight e-commerce micro-application built with the Laravel PHP framework, offering a minimal yet functional structure for managing products, browsing, and perhaps handling basic checkout flows.
+
+Features 
+
+Product listing using Blade templates
+
+Routing and controllers powered by Laravel
+
+Frontend styling via Tailwind CSS
+
+Asset bundling and hot reload using Vite
+
+Flexible configuration with typical Laravel structure
+
+Tech Stack
+
+Backend Framework: Laravel (PHP)
+
+Templating: Blade
+
+Frontend Styling: Tailwind CSS
+
+Asset Bundling: Vite
+
+
+
+
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
