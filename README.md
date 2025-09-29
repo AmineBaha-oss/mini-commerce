@@ -8,7 +8,7 @@ Product listing using Blade templates
 
 Routing and controllers powered by Laravel
 
-Frontend styling via Tailwind CSS
+Frontend styling via Tailwind CSS 
 
 Asset bundling and hot reload using Vite
 
